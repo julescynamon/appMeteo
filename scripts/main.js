@@ -1,3 +1,4 @@
+    import tabJoursEnOrdre from "./Utilitaire/gestionTemps.js";
     const clefAPI = "ee4d0408076eb196a91997289aeefb6f";
     let resultatsAPI;
     const temps = document.querySelector(".temps");
@@ -5,6 +6,10 @@
     const localisation = document.querySelector(".localisation");
     const heure = document.querySelectorAll(".heure-nom-previson");
     const tempPourH = document.querySelectorAll(".heure-prevision-valeur");
+    const joursDiv = document.querySelectorAll('.jour-prevision-nom');
+    const tempJoursDiv = document.querySelectorAll(".jour-prevision-temps");
+    const imgIcone = document.querySelector(".logo-meteo");
+    const chargementContainer = document.querySelector(".overlay-icone-chargement");
 
             if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -12,7 +17,7 @@
                 // console.log(position);
                 let long = position.coords.longitude;
                 let lat = position.coords.latitude;
-                appelAPI(long, lat);
+                AppelAPI(long, lat);
                 },
                 () => {
                 alert(
@@ -21,9 +26,9 @@
                 });
             }
 
-        function appelAPI(long, lat) {
+        function AppelAPI(long, lat) {
         fetch(
-            `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${long}&exclude=minutely&units=metric&lang=fr&appid=${clefAPI}`
+            `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${long}&exclude=&units=metric&lang=fr&appid=${clefAPI}`
         )
             .then((reponse) => {
             return reponse.json();
@@ -60,6 +65,30 @@
                     tempPourH[j].innerText = `${Math.trunc(
                       resultatsAPI.hourly[j * 3].temp)}°`;
                 }
+
+                // les 3 premieres lettres des jours
+
+                for (let k = 0; k < tabJoursEnOrdre.length; k++) {
+                    joursDiv[k].innerText = tabJoursEnOrdre[k].slice(0, 3);
+                }
+
+                // Temps par jour
+
+                for (let m = 0; m < 7; m++) {
+                    tempJoursDiv[m].innerText = `${Math.trunc(
+                    resultatsAPI.daily[m + 1].temp.day)}°`;
+                }
+
+                // icone dynamique
+
+
+                if (heureActuelle >= 6 && heureActuelle < 21) {
+                    imgIcone.src = `ressources/jour/${resultatsAPI.current.weather[0].icon}.svg`;
+                } else {
+                    imgIcone.src = `ressources/nuit/${resultatsAPI.current.weather[0].icon}.svg`;
+                }
+
+                chargementContainer.classList.add("disparition");
 
             });
         }
