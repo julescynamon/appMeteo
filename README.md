@@ -1,1 +1,3 @@
-appMeteo
+#appMeteo
+
+Application météo en JS
